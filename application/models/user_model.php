@@ -48,7 +48,14 @@ class User_model extends CI_Model {
 	 * @return bool true on success, false on failure
 	 */
 	public function resolve_user_login($username, $password) {
-		$query = $this->db->query("SELECT * FROM users where username='$username' AND password='$password' ; ");
+		$query = $this->db->query("SELECT * FROM users where username='$username' AND password='$password' ");
+		
+		if (!$query->num_rows()){
+			return '無此帳號或密碼錯誤';
+		}
+		else if (!$query->result()[0]->activate){
+			return '帳號未認證';
+		}
 		
 		return $query;
 
@@ -127,23 +134,21 @@ class User_model extends CI_Model {
 	public function email_activate($username, $email, $password)
     {
         // Set SMTP Configuration
-        /*
+        
 		$emailConfig = [
             'protocol' => 'smtp', 
-            'smtp_host' => 'ssl://smtp.googlemail.com', 
-            'smtp_port' => 465, 
-            'smtp_user' => 'xxx@gmail.com', 
-            'smtp_pass' => 'xxx', 
-            'mailtype' => 'html', 
-            'charset' => 'iso-8859-1'
+			'smtp_host' => 'std.must.edu.tw', 
+			'smtp_port' => 25, 
+			'smtp_user' => 'b02170XXX', 
+			'smtp_pass' => '', 
+			'mailtype' => 'html', 
+			'charset' => 'utf8'	
         ];
-		*/
+		
 		
 		$namepass = $username . $password; // This variable will now hold your hashed password.
 		$hash = md5($namepass); //echo $hash;
-		
-		$this->config->load('smtpconfig');
-		$emailConfig = $this->config->item('smtp_config');
+
 		//print_r ($emailConfig);
 		
         // Set your email information
